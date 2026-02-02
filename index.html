@@ -16,7 +16,7 @@
 <script type="text/babel">
 const { useState } = React;
 
-/* ---------- ML-Inspired Analysis Engine ---------- */
+/* ---------- ML-Type Engine ---------- */
 
 const fakeIndicators = [
   "breaking","shocking","exclusive","you won't believe",
@@ -92,7 +92,7 @@ function App() {
         </p>
       </div>
 
-      {/* Input Card */}
+      {/* Input  */}
       <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl">
         <textarea
           value={text}
@@ -119,7 +119,7 @@ function App() {
         </div>
       </div>
 
-      {/* Result */}
+      {/* Result koi harkat mat karna  */}
       {result && (
         <div className={`mt-6 w-full max-w-4xl p-6 rounded-2xl border
           ${result.label === "FAKE"
@@ -160,16 +160,15 @@ function App() {
       <div className="mt-8 max-w-4xl text-sm text-gray-600 bg-white p-5 rounded-xl shadow">
         <h3 className="font-semibold text-gray-800 mb-2">How This System Works</h3>
         <p>
-          This system analyzes linguistic patterns commonly found in fake and real news.
-          It evaluates sensational language, credibility indicators, article length,
-          and reporting style to generate a prediction with confidence.
+         This system distinguishes between real and fake news by analyzing linguistic patterns.
+          It evaluates key features—
+          including sensationalism, credibility markers, article length, and reporting style—to generate a prediction accompanied by a confidence score.
         </p>
       </div>
 
       {/* Footer */}
       <p className="text-xs text-gray-500 mt-6 text-center max-w-xl">
-        ⚠️ This is a prototype demonstration. Real-world deployment requires
-        trained machine learning models and fact-checking integration.
+        Fake news Detector
       </p>
 
     </div>
