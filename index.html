@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fake News Detection System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+/* ---------- ML-Inspired Analysis Engine ---------- */
+
+const fakeIndicators = [
+  "breaking","shocking","exclusive","you won't believe",
+  "secret","banned","exposed","cover-up","conspiracy",
+  "leaked","elite","agenda","click here"
+];
+
+const realIndicators = [
+  "according to","reported","official","confirmed",
+  "study","research","data shows","investigation",
+  "press release","statistics"
+];
+
+function analyzeNews(text) {
+  const t = text.toLowerCase();
+  let fakeScore = 0;
+  let realScore = 0;
+  let reasons = [];
+
+  fakeIndicators.forEach(w => {
+    if (t.includes(w)) {
+      fakeScore++;
+      reasons.push(`Sensational phrase detected: "${w}"`);
+    }
+  });
+
+  realIndicators.forEach(w => {
+    if (t.includes(w)) {
+      realScore++;
+      reasons.push(`Credible news indicator found: "${w}"`);
+    }
+  });
+
+  if (text.split(/\s+/).length < 25) {
+    fakeScore++;
+    reasons.push("Article is unusually short");
+  }
+
+  const label = fakeScore > realScore ? "FAKE" : "REAL";
+  const confidence = Math.min(
+    95,
+    60 + Math.abs(fakeScore - realScore) * 10
+  );
+
+  return { label, confidence, reasons };
+}
+
+/* ---------- APP ---------- */
+
+function App() {
+  const [text, setText] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const analyze = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setResult(analyzeNews(text));
+      setLoading(false);
+    }, 1200);
+  };
+
+  return (
+    <div className="min-h-screen p-6 flex flex-col items-center">
+
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h1 className="text-4xl font-bold text-indigo-700">
+          📰 Fake News Detection System
+        </h1>
+        <p className="text-gray-600 mt-1">
+          AI & Machine Learning Based Content Verification
+        </p>
+      </div>
+
+      {/* Input Card */}
+      <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Paste news article or headline here..."
+          className="w-full h-48 p-4 border rounded-xl focus:ring-2 focus:ring-indigo-500"
+        />
+
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={() => setText("")}
+            className="px-4 py-2 bg-gray-200 rounded-lg"
+          >
+            Clear
+          </button>
+
+          <button
+            onClick={analyze}
+            disabled={!text || loading}
+            className="px-6 py-2 bg-indigo-600 text-white rounded-lg"
+          >
+            {loading ? "Analyzing..." : "Analyze News"}
+          </button>
+        </div>
+      </div>
+
+      {/* Result */}
+      {result && (
+        <div className={`mt-6 w-full max-w-4xl p-6 rounded-2xl border
+          ${result.label === "FAKE"
+            ? "bg-red-50 border-red-200"
+            : "bg-emerald-50 border-emerald-200"}`}>
+
+          <h2 className={`text-2xl font-bold
+            ${result.label === "FAKE" ? "text-red-700" : "text-emerald-700"}`}>
+            {result.label} NEWS
+          </h2>
+
+          <p className="mt-1 text-gray-700">
+            Confidence Level: <b>{result.confidence}%</b>
+          </p>
+
+          {/* Confidence Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-3 mt-3">
+            <div
+              className={`h-3 rounded-full
+                ${result.label === "FAKE" ? "bg-red-500" : "bg-emerald-500"}`}
+              style={{ width: `${result.confidence}%` }}
+            ></div>
+          </div>
+
+          {/* Explanation */}
+          <h3 className="mt-4 font-semibold text-gray-800">
+            Decision Explanation:
+          </h3>
+          <ul className="list-disc list-inside text-gray-600 mt-2">
+            {result.reasons.slice(0,6).map((r,i) => (
+              <li key={i}>{r}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* How It Works */}
+      <div className="mt-8 max-w-4xl text-sm text-gray-600 bg-white p-5 rounded-xl shadow">
+        <h3 className="font-semibold text-gray-800 mb-2">How This System Works</h3>
+        <p>
+          This system analyzes linguistic patterns commonly found in fake and real news.
+          It evaluates sensational language, credibility indicators, article length,
+          and reporting style to generate a prediction with confidence.
+        </p>
+      </div>
+
+      {/* Footer */}
+      <p className="text-xs text-gray-500 mt-6 text-center max-w-xl">
+        ⚠️ This is a prototype demonstration. Real-world deployment requires
+        trained machine learning models and fact-checking integration.
+      </p>
+
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
